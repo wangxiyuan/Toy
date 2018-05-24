@@ -1,0 +1,31 @@
+<!doctype html>
+<h1>GitHub Oauth Test Page</h1>
+<p>Click the Link below to login with Github. Then your Github's information will be printed.</p>
+<p><a href="{{oauth_url}}">Auth with GitHub</a></p>
+<p>&nbsp;</p>
+<p>The record:</p>
+<table style="height: 12px;" border="1">
+<tbody>
+<tr>
+<td>login_name</td>
+<td>name</td>
+<td>email</td>
+<td>company</td>
+<td>created_at</td>
+<td>public_repos</td>
+<td>followers</td>
+<td>following</td>
+{% for key in data %}
+  </tr>
+  <td>{{key}}</td>
+  <td>{{data[key]["name"]}}</td>
+  <td>{{data[key]["email"]}}</td>
+  <td>{{data[key]["company"]}}</td>
+  <td>{{data[key]["created_at"]}}</td>
+  <td>{{data[key]["public_repos"]}}</td>
+  <td>{{data[key]["followers"]}}</td>
+  <td>{{data[key]["following"]}}</td>
+  <tr>
+{% endfor %}
+</tbody>
+</table>
