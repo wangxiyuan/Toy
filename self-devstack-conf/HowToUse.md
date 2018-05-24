@@ -1,0 +1,1 @@
+``local.conf`` is an example config file for OpenStack Devstack Project.
