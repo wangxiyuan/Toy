@@ -77,6 +77,6 @@ if __name__ == "__main__":
     parser.add_argument('--ip', metavar='<ip>', required=True,
                         help="The webhook server's IP")
     parser.add_argument('--port', metavar='<port>', default='80',
-                        help="The listener's port. Default if 80")
+                        help="The listener's port. Default is 80")
     args = parser.parse_args()
     main(args)
