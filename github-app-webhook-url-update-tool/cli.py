@@ -10,7 +10,7 @@ except Exception:
 GLOBAL_SESSION = requests.session()
 
 
-def get_login_page_authenticity_token():
+def _get_login_page_authenticity_token():
     login_page = GLOBAL_SESSION.get('https://github.com/login')
     login_page_content = login_page.content.decode('utf-8')
     authenticity_token = (login_page_content.split('authenticity_token')[1]
@@ -19,7 +19,7 @@ def get_login_page_authenticity_token():
     return quoted_authenticity_token
 
 
-def get_github_app_page_authenticity_token(app_url):
+def _get_github_app_page_authenticity_token(app_url):
     github_app_page = GLOBAL_SESSION.get(app_url)
     github_app_page_content = github_app_page.content.decode('utf-8')
     authenticity_token = (github_app_page_content.split('edit_integration')[2]
@@ -29,7 +29,7 @@ def get_github_app_page_authenticity_token(app_url):
 
 
 def main(args):
-    login_token = get_login_page_authenticity_token()
+    login_token = _get_login_page_authenticity_token()
     login_info = ('authenticity_token=%(token)s&login=%(username)s&'
                   'password=%(password)s' % {'token': login_token,
                                              'username': args.user,
@@ -47,7 +47,7 @@ def main(args):
         exit(1)
 
     app_url = 'https://github.com/settings/apps/%s' % args.app
-    github_app_edit_token = get_github_app_page_authenticity_token(app_url)
+    github_app_edit_token = _get_github_app_page_authenticity_token(app_url)
     update_response = GLOBAL_SESSION.post(
         app_url,
         data="_method=put&authenticity_token=" +
