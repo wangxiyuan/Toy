@@ -1,4 +1,5 @@
 import argparse
+from html.parser import HTMLParser
 import requests
 try:
     from urllib import parse
@@ -6,25 +7,57 @@ except Exception:
     print("This tool only support python3")
     exit(1)
 
-
 GLOBAL_SESSION = requests.session()
+LOGIN_AUTH_TOKEN = None
+APP_UPDATE_AUTH_TOKEN = None
+
+
+class LoginHTMLParser(HTMLParser):
+    def handle_startendtag(self, tag, attrs):
+        global LOGIN_AUTH_TOKEN
+        if tag == 'input' and ('name', 'authenticity_token') in attrs:
+            for key, value in attrs:
+                if key == 'value':
+                    LOGIN_AUTH_TOKEN = value
+
+
+class AppUpdateHTMLParser(HTMLParser):
+    token_index = 1
+
+    def handle_startendtag(self, tag, attrs):
+        global APP_UPDATE_AUTH_TOKEN
+        if tag == 'input' and ('name', 'authenticity_token') in attrs:
+            if self.token_index == 6:
+                for key, value in attrs:
+                    if key == 'value':
+                        APP_UPDATE_AUTH_TOKEN = value
+                self.token_index += 1
+            else:
+                self.token_index += 1
 
 
 def _get_login_page_authenticity_token():
     login_page = GLOBAL_SESSION.get('https://github.com/login')
     login_page_content = login_page.content.decode('utf-8')
-    authenticity_token = (login_page_content.split('authenticity_token')[1]
-                          .split('\"')[2])
-    quoted_authenticity_token = parse.quote(authenticity_token)
+
+    login_page_parser = LoginHTMLParser()
+    login_page_parser.feed(login_page_content)
+    login_page_parser.close()
+    quoted_authenticity_token = parse.quote(LOGIN_AUTH_TOKEN)
     return quoted_authenticity_token
 
 
-def _get_github_app_page_authenticity_token(app_url):
-    github_app_page = GLOBAL_SESSION.get(app_url)
-    github_app_page_content = github_app_page.content.decode('utf-8')
-    authenticity_token = (github_app_page_content.split('edit_integration')[2]
-                          .split('authenticity_token')[1].split('\"')[2])
-    quoted_authenticity_token = parse.quote(authenticity_token)
+def _get_github_app_page_authenticity_token(app_url, app_name):
+    app_page = GLOBAL_SESSION.get(app_url)
+    if app_page.status_code == 404:
+        print("Not Found Github App: %s" % app_name)
+        exit(1)
+    app_page_content = app_page.content.decode('utf-8')
+
+    app_page_parser = AppUpdateHTMLParser()
+    app_page_parser.feed(app_page_content)
+
+    quoted_authenticity_token = parse.quote(APP_UPDATE_AUTH_TOKEN)
     return quoted_authenticity_token
 
 
@@ -47,7 +80,8 @@ def main(args):
         exit(1)
 
     app_url = 'https://github.com/settings/apps/%s' % args.app
-    github_app_edit_token = _get_github_app_page_authenticity_token(app_url)
+    github_app_edit_token = _get_github_app_page_authenticity_token(app_url,
+                                                                    args.app)
     update_response = GLOBAL_SESSION.post(
         app_url,
         data="_method=put&authenticity_token=" +
