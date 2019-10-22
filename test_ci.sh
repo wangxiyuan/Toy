@@ -1,1 +1,2 @@
+uname -i
 echo hello
