@@ -1,0 +1,22 @@
+sudo: required
+dist: xenial
+
+install: true
+
+language: java
+
+git:
+  depth: 100
+
+
+stages:
+  - name: compile
+arch:
+  - arm64
+  - amd64
+jobs:
+  include:
+    # main profile
+    - stage: compile
+      script: ./test_ci.sh
+      name: compile
