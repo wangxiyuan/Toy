@@ -3,8 +3,6 @@ dist: xenial
 
 install: true
 
-language: java
-
 git:
   depth: 100
 
@@ -12,15 +10,23 @@ git:
 stages:
   - name: compile
   - name: test
-arch:
-  - arm64
-  - amd64
+
 jobs:
   include:
     # main profile
     - stage: compile
       script: ./test_ci.sh
       name: compile
+      arch: arm64
+    - stage: compile
+      script: ./test_ci.sh
+      name: compile
+      arch: amd64
     - stage: test
       script: ./test_ci.sh
       name: test
+      arch: arm64
+    - stage: test
+      script: ./test_ci.sh
+      name: test
+      arch: amd64
