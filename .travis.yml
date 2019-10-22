@@ -11,6 +11,7 @@ git:
 
 stages:
   - name: compile
+  - name: test
 arch:
   - arm64
   - amd64
@@ -20,3 +21,6 @@ jobs:
     - stage: compile
       script: ./test_ci.sh
       name: compile
+    - stage: test
+      script: ./test_ci.sh
+      name: test
