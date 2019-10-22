@@ -18,15 +18,6 @@ jobs:
       script: ./test_ci.sh
       name: compile
       arch: arm64
-    - stage: compile
-      script: ./test_ci.sh
-      name: compile
-      arch: amd64
     - stage: test
       script: ./test_ci.sh
       name: test
-      arch: arm64
-    - stage: test
-      script: ./test_ci.sh
-      name: test
-      arch: amd64
