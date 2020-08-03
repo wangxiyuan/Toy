@@ -40,7 +40,7 @@ def getInfo(line):
     if 'whl' in res.split("\" ")[1]:
         file_name = res.split("\" ")[1].split('/')[-1]
     else:
-        file_name = res.split("\" ")[0].split('/')[-1][:-5]
+        file_name = res.split("\" ")[0].split('/')[-2].split(' ')[0]
 
     return IP, request_time, file_name
 
